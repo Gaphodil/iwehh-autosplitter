@@ -59,6 +59,9 @@ startup
     settings.Add("eachItem", true, "Split Each Item");
     settings.SetToolTip("eachItem", "Split on every item pickup (except in tower).");
 
+    settings.Add("autoReset", false, "Auto Reset");
+    settings.SetToolTip("autoReset", "Resets if IGT = 0.00. Useful for F2 to main menu, bad for starting early.");
+
     // for not re-splitting if you die after collecting an item
     bool[] noRepeatF2 = new bool[13];
     bool[] noRepeatF1 = new bool[14];
@@ -72,17 +75,23 @@ start
     Array.Clear(vars.noRepeatF2, 0, 13);
     Array.Clear(vars.noRepeatF1, 0, 14);
 
-    return (current.seconds < 0.1 && current.microseconds > old.microseconds);
-    // if (old.timerPopup == 1 && current.timerPopup == 0)
-    // {
-    //     return true;
-    // }
+    if (settings["autoReset"])
+    {
+        return (current.seconds < 0.1 && current.microseconds > old.microseconds);
+    }
+    if (old.timerPopup == 1 && current.timerPopup == 0)
+    {
+        return true;
+    }
 }
 
 reset
 {
     // return to title screen
-    return (old.timerPopup == 0 && current.seconds < 0.1 && current.microseconds < 0.1);
+    if (settings["autoReset"])
+    {
+        return (old.timerPopup == 0 && current.seconds < 0.1 && current.microseconds < 0.1);
+    }
 }
 
 split
